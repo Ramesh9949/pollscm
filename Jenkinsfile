@@ -7,51 +7,40 @@ pipeline
         {
             steps
             {
-                git 'https://github.com/intelliqittrainings/maven.git'
+                git 'https://github.com/Ramesh9949/pollscm.git'
             }
         }
-        stage('ContinuousBuild')
+        stage('Continuousbuild')
         {
             steps
             {
-                sh 'mvn package'
+                sh 'mvn clean package'
             }
         }
-        stage('ContinuousDeployment')
+         stage('Continuousdeployment')
         {
             steps
             {
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.51.212:9090')], contextPath: 'test1', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: '9a4e0403-23c8-463e-9cad-778e9d428803', path: '', url: 'http://172.31.20.66:8080')], contextPath: 'bhav', war: '**/*.war'
             }
         }
-        stage('ContinuousTesting')
+         stage('Continuoustesting')
         {
             steps
             {
-               git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-               sh 'java -jar /home/ubuntu/.jenkins/workspace/DeclarativePipeline1/testing.jar'
+                git 'https://github.com/Ramesh9949/FunctionalTesting.git'
+                
+                sh 'java -jar /var/lib/jenkins/workspace/ramesh/testing.jar'
             }
         }
-       
+        stage('Continuousdelivery')
+        {
+            steps
+            {
+                deploy adapters: [tomcat9(credentialsId: '450cfb8b-82e7-4ea4-b8cf-1cd08ad0b9aa', path: '', url: 'http://172.31.20.66:8080')], contextPath: 'app', war: '**/*.war'
+            }
+        }
+        
     }
     
-    post
-    {
-        success
-        {
-            input message: 'Need approval from the DM!', submitter: 'srinivas'
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.50.204:9090')], contextPath: 'prod1', war: '**/*.war'
-        }
-        failure
-        {
-            mail bcc: '', body: 'Continuous Integration has failed', cc: '', from: '', replyTo: '', subject: 'CI Failed', to: 'selenium.saikrishna@gmail.com'
-        }
-       
-    }
-    
-    
-    
-    
-    
-    
-}
+}    
